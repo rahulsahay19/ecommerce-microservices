@@ -1,4 +1,6 @@
-﻿namespace Catalog.API.Controllers
+﻿using System.Net;
+
+namespace Catalog.API.Controllers
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -27,10 +29,9 @@
             return Ok(products);
         }
 
-        [Route(Id, Name = "GetProduct")]
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpGet(Id, Name = "GetProduct")]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<Product>> GetProductById(string id)
         {
             var product = await _productRepo.GetProduct(id);
@@ -45,9 +46,9 @@
         [Route(CategoryName)]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProductByCategory(string categoryName)
+        public async Task<ActionResult<IEnumerable<Product>>> GetProductByCategory(string category)
         {
-            var products = await _productRepo.GetProductByCategory(categoryName);
+            var products = await _productRepo.GetProductByCategory(category);
             return Ok(products);
         }
 
@@ -57,7 +58,7 @@
         {
             await _productRepo.Create(product);
 
-            return CreatedAtRoute("GetProduct", new { id = product.Id }, product);
+            return CreatedAtRoute("GetProduct", new { version="1", id = product.Id }, product);
         }
 
         [HttpPut]

@@ -9,7 +9,8 @@ namespace Catalog.API
     using Settings;
     using Repositories;
     using Microsoft.Extensions.Options;
-    
+    using Microsoft.OpenApi.Models;
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -23,10 +24,14 @@ namespace Catalog.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<CatalogDbSettings>(Configuration.GetSection(nameof(CatalogDbSettings)));
-            services.AddSingleton<ICatalogDbSettings>(sp=>sp.GetRequiredService<IOptions<CatalogDbSettings>>().Value);
+            services.AddSingleton<ICatalogDbSettings>(sp => sp.GetRequiredService<IOptions<CatalogDbSettings>>().Value);
             services.AddTransient<ICatalogContext, CatalogContext>();
             services.AddTransient<IProductRepo, ProductRepo>();
             services.AddApiVersioning();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Catalog API", Version = "v1" });
+            });
             services.AddControllers();
         }
 
@@ -45,6 +50,11 @@ namespace Catalog.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Catalog API V1");
             });
         }
     }
