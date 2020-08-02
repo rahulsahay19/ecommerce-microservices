@@ -14,9 +14,9 @@ services:
         container_name: catalogapi
         environment:
             - ASPNETCORE_ENVIRONMENT=Development
-            - "CatalogDatabaseSettings:ConnectionString=mongodb://catalogdb:27017"
-            - "CatalogDatabaseSettings:DatabaseName=CatalogDb"
-            - "CatalogDatabaseSettings:CollectionName=Products"
+            - "CatalogDbSettings__ConnectionString=mongodb://catalogdb:27017"
+            - "CatalogDbSettings__DatabaseName=CatalogDb"
+            - "CatalogDbSettings__CollectionName=Products"
         depends_on:
             - catalogdb
         volumes:
