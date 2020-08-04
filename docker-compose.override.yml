@@ -9,6 +9,11 @@ services:
             
         ports:
             - "27017:27017"
+    basketdb:
+        container_name: basketdb
+        restart: always
+        ports:
+            - "6379:6379"
 
     catalog.api:
         container_name: catalogapi
@@ -19,8 +24,15 @@ services:
             - "CatalogDbSettings__CollectionName=Products"
         depends_on:
             - catalogdb
-        volumes:
-            - ${HOME}/.microsoft/usersecrets/:/root/.microsoft/usersecrets
-            - ${HOME}/.aspnet/https:/root/.aspnet/https/
         ports:
             - "7000:80"
+    basket.api:
+         container_name: basketapi
+         environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - "ConnectionStrings__Redis=basketdb:6379"
+         depends_on:
+            - basketdb
+         ports:
+            - "7001:80"
+

@@ -1,6 +1,4 @@
-﻿using System.Net;
-
-namespace Catalog.API.Controllers
+﻿namespace Catalog.API.Controllers
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -9,6 +7,7 @@ namespace Catalog.API.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
+    using System.Net;
     using static Infrastructure.WebConstants;
     public class CatalogController : ApiController
     {
