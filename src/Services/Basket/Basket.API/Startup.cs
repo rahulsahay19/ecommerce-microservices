@@ -1,6 +1,3 @@
-using Basket.API.Data;
-using Basket.API.Repositories;
-
 namespace Basket.API
 {
     using Microsoft.AspNetCore.Builder;
@@ -10,10 +7,20 @@ namespace Basket.API
     using Microsoft.Extensions.Hosting;
     using Microsoft.OpenApi.Models;
     using StackExchange.Redis;
+    using AutoMapper;
+    using Data;
+    using Repositories;
+    using EventBusRabbitMQ;
+    using EventBusRabbitMQ.Producer;
+    using Microsoft.Extensions.Logging;
+    using RabbitMQ.Client;
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly ILoggerFactory _loggerFactory;
+
+        public Startup(IConfiguration configuration, ILoggerFactory loggerFactory)
         {
+            _loggerFactory = loggerFactory;
             Configuration = configuration;
         }
 
@@ -34,6 +41,24 @@ namespace Basket.API
             });
             services.AddTransient<IBasketContext, BasketContext>();
             services.AddTransient<IBasketRepo, BasketRepo>();
+            services.AddAutoMapper(typeof(Startup));
+            services.AddSingleton<IRabbitMQConnection>(sp =>
+            {
+                var factory = new ConnectionFactory()
+                {
+                    HostName = Configuration["EventBus:HostName"]
+                };
+                if (!string.IsNullOrEmpty(Configuration["EventBus:UserName"]))
+                {
+                    factory.UserName = Configuration["EventBus:UserName"];
+                }
+                if (!string.IsNullOrEmpty(Configuration["EventBus:Password"]))
+                {
+                    factory.Password = Configuration["EventBus:Password"];
+                }
+                return new RabbitMQConnection(factory, _loggerFactory);
+            });
+            services.AddSingleton<EventBusRabbitMQProducer>();
             services.AddControllers();
         }
 
