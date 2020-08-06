@@ -57,8 +57,8 @@
         public async Task<IActionResult> Checkout([FromBody] Checkout checkout)
         {
             // calculate total price of the basket
-            // send the basket to rabbit mq for ordering service to process it
             // remove the basket
+            // send the basket to rabbit mq for ordering service to process it
             var basket = await _basketRepo.GetBasket(checkout.UserName);
             if (basket == null)
             {

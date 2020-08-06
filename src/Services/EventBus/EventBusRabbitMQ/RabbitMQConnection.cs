@@ -13,10 +13,10 @@ namespace EventBusRabbitMQ
         private IConnection _connection;
         private bool _disposed;
 
-        public RabbitMQConnection(IConnectionFactory connectionFactory, ILogger<RabbitMQConnection> logger)
+        public RabbitMQConnection(IConnectionFactory connectionFactory, ILoggerFactory loggerFactory)
         {
             _connectionFactory = connectionFactory;
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger<RabbitMQConnection>();
             if (!IsConnected)
             {
                 TryConnect();
