@@ -1,11 +1,10 @@
-﻿using System;
-using System.Threading;
-using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Exceptions;
-
-namespace EventBusRabbitMQ
+﻿namespace EventBusRabbitMQ
 {
+    using System;
+    using System.Threading;
+    using Microsoft.Extensions.Logging;
+    using RabbitMQ.Client;
+    using RabbitMQ.Client.Exceptions;
     public class RabbitMQConnection : IRabbitMQConnection
     {
         private readonly IConnectionFactory _connectionFactory;

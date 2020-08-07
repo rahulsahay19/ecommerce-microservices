@@ -1,7 +1,6 @@
-﻿using System;
-
-namespace EventBusRabbitMQ.Producer
+﻿namespace EventBusRabbitMQ.Producer
 {
+    using System;
     using System.Text;
     using Events;
     using Newtonsoft.Json;
