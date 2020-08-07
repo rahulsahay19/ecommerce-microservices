@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+
 namespace Basket.API
 {
     using Microsoft.AspNetCore.Builder;
@@ -12,15 +14,11 @@ namespace Basket.API
     using Repositories;
     using EventBusRabbitMQ;
     using EventBusRabbitMQ.Producer;
-    using Microsoft.Extensions.Logging;
     using RabbitMQ.Client;
     public class Startup
     {
-        private readonly ILoggerFactory _loggerFactory;
-
-        public Startup(IConfiguration configuration, ILoggerFactory loggerFactory)
+        public Startup(IConfiguration configuration)
         {
-            _loggerFactory = loggerFactory;
             Configuration = configuration;
         }
 
@@ -29,7 +27,7 @@ namespace Basket.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddApiVersioning();
+        services.AddApiVersioning();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Basket API", Version = "v1" });
@@ -40,10 +38,12 @@ namespace Basket.API
                 return ConnectionMultiplexer.Connect(config);
             });
             services.AddTransient<IBasketContext, BasketContext>();
+       
             services.AddTransient<IBasketRepo, BasketRepo>();
             services.AddAutoMapper(typeof(Startup));
             services.AddSingleton<IRabbitMQConnection>(sp =>
             {
+                var logger = sp.GetRequiredService<ILogger<RabbitMQConnection>>();
                 var factory = new ConnectionFactory()
                 {
                     HostName = Configuration["EventBus:HostName"]
@@ -56,7 +56,7 @@ namespace Basket.API
                 {
                     factory.Password = Configuration["EventBus:Password"];
                 }
-                return new RabbitMQConnection(factory, _loggerFactory);
+                return new RabbitMQConnection(factory, logger);
             });
             services.AddSingleton<EventBusRabbitMQProducer>();
             services.AddControllers();
