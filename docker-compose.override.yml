@@ -4,8 +4,6 @@ services:
     catalogdb:
         container_name: catalogdb
         restart: always
-        volumes:
-            - ${WEBAPP_STORAGE_HOME}/site:/data/db
         ports:
             - "27017:27017"
     basketdb:
@@ -13,6 +11,14 @@ services:
         restart: always
         ports:
             - "6379:6379"
+
+    orderdb:
+        container_name: orderdb
+        ports:
+            - "1445:1433"
+        environment:
+            SA_PASSWORD: "DockerSqlServer123"
+            ACCEPT_EULA: "Y"
 
     rabbitmq:
         container_name: rabbitmq
@@ -32,6 +38,7 @@ services:
             - catalogdb
         ports:
             - "7000:80"
+   
     basket.api:
          container_name: basketapi
          environment:
@@ -46,3 +53,17 @@ services:
          ports:
             - "7001:80"
 
+    order.api:
+        container_name: orderingapi
+        restart: on-failure
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - "ConnectionStrings__OrderConnection=Server=orderdb;Database=OrderDb;User Id=sa;Password=DockerSqlServer123"
+            - "EventBus__HostName=rabbitmq"
+            - "EventBus__UserName=guest"
+            - "EventBus__Password=guest"
+        depends_on:
+            - orderdb
+            - rabbitmq
+        ports:
+            - "7002:80" 
